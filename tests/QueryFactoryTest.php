@@ -1,7 +1,7 @@
 <?php
 namespace Aura\SqlQuery;
 
-class QueryFactoryTest extends \PHPUnit_Framework_TestCase
+class QueryFactoryTest extends AbstractAssertSql
 {
     /**
      * @dataProvider provider
@@ -72,5 +72,23 @@ class QueryFactoryTest extends \PHPUnit_Framework_TestCase
 
         $again = $query_factory->newSelect();
         $this->assertSame('_1', $again->getSeqBindPrefix());
+    }
+
+    public function testNoQuotes()
+    {
+        $query_factory = new QueryFactory('sqlite', QueryFactory::COMMON, false);
+
+        $this->query = $query_factory->newSelect();
+        $this->query->cols(array('*'))->from('t2')->where('foo = ?', 'bar');
+        $expect = '
+            SELECT
+                *
+            FROM
+                <<t2>>
+            WHERE
+                foo = :_1_
+        ';
+        $actual = $this->query->__toString();
+        $this->assertSameSql($expect, $actual);
     }
 }

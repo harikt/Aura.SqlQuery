@@ -109,12 +109,18 @@ class QueryFactory
      */
     public function __construct(
         $db,
-        $common = null
+        $common = null,
+        $quote = true
     ) {
         $this->db = ucfirst(strtolower($db));
         $this->common = ($common === self::COMMON);
-        $this->quote_name_prefix = $this->quotes[$this->db][0];
-        $this->quote_name_suffix = $this->quotes[$this->db][1];
+        if ($quote) {
+            $this->quote_name_prefix = $this->quotes[$this->db][0];
+            $this->quote_name_suffix = $this->quotes[$this->db][1];
+        } else {
+            $this->quote_name_prefix = '';
+            $this->quote_name_suffix = '';
+        }
     }
 
     /**

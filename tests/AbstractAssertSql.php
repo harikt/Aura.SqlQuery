@@ -1,29 +1,8 @@
 <?php
 namespace Aura\SqlQuery;
 
-abstract class AbstractQueryTest extends AbstractAssertSql
+abstract class AbstractAssertSql extends \PHPUnit_Framework_TestCase
 {
-    protected $query_factory;
-
-    protected $query_type;
-
-    protected $db_type = 'Common';
-
-    protected $query;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->query_factory = new QueryFactory($this->db_type);
-        $this->query = $this->newQuery();
-    }
-
-    protected function newQuery()
-    {
-        $method = 'new' . $this->query_type;
-        return $this->query_factory->$method();
-    }
-
     protected function assertSameSql($expect, $actual)
     {
         // remove leading and trailing whitespace per block and line
@@ -52,26 +31,5 @@ abstract class AbstractQueryTest extends AbstractAssertSql
         $string = str_replace('<<', $this->query->getQuoteNamePrefix(), $string);
         $string = str_replace('>>', $this->query->getQuoteNameSuffix(), $string);
         return $string;
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-    }
-
-    public function testBindValues()
-    {
-        $actual = $this->query->getBindValues();
-        $this->assertSame(array(), $actual);
-
-        $expect = array('foo' => 'bar', 'baz' => 'dib');
-        $this->query->bindValues($expect);
-        $actual = $this->query->getBindValues();
-        $this->assertSame($expect, $actual);
-
-        $this->query->bindValues(array('zim' => 'gir'));
-        $expect = array('foo' => 'bar', 'baz' => 'dib', 'zim' => 'gir');
-        $actual = $this->query->getBindValues();
-        $this->assertSame($expect, $actual);
     }
 }
